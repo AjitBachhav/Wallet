@@ -26,7 +26,8 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public BigDecimal getWalletBalance(final Long playerId) {
-        return accountRepository.findById(playerId).map(Account::getBalance).orElse(null);
+        return accountRepository.findById(playerId).map(Account::getBalance)
+                .orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND));
     }
 
     @Override

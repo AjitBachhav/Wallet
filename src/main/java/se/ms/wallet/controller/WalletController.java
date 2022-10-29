@@ -36,9 +36,7 @@ public class WalletController {
 
     @GetMapping(path = "/balance/{playerId}")
     public ResponseEntity<BigDecimal> getWalletBalance(@PathVariable final Long playerId) {
-        final BigDecimal walletBalance = walletService.getWalletBalance(playerId);
-        return walletBalance != null ?
-                ResponseEntity.ok(walletBalance) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.ok(walletService.getWalletBalance(playerId));
     }
 
     @GetMapping(path = "/generateTransactionId")
