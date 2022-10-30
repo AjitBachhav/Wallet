@@ -13,6 +13,8 @@ import se.ms.wallet.service.WalletService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -32,8 +34,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     @Transactional
     public Transaction performTransaction(final TransactionType type, final Long playerId, final BigDecimal amount, final String transactionId) {
-        final Account account = accountRepository.findById(playerId)
-                .orElseThrow(() -> new HttpServerErrorException(NOT_FOUND, "Couldn't find an account by given id."));
+        final Account account = getAccount(playerId);
 
         final BigDecimal balance = account.getBalance();
         final BigDecimal newBalance = balance.add(amount.multiply(BigDecimal.valueOf(type.getSignum())));
@@ -53,8 +54,14 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public BigDecimal getWalletBalance(final Long playerId) {
-        return accountRepository.findById(playerId).map(Account::getBalance)
-                .orElseThrow(() -> new HttpServerErrorException(NOT_FOUND));
+        return getAccount(playerId).getBalance();
+    }
+
+    @Override
+    public List<Transaction> getTransactionHistory(final Long playerId) {
+        return getAccount(playerId).getTransactions().stream()
+                .sorted(Comparator.comparing(Transaction::getTransactionDateTime).reversed())
+                .toList();
     }
 
     @Override
@@ -71,5 +78,10 @@ public class WalletServiceImpl implements WalletService {
         } catch (final IllegalArgumentException ex) {
             throw new HttpServerErrorException(HttpStatus.BAD_REQUEST, "Transaction id is of invalid format.");
         }
+    }
+
+    private Account getAccount(final Long playerId) {
+        return accountRepository.findById(playerId).orElseThrow(() ->
+                new HttpServerErrorException(NOT_FOUND, "Couldn't find an account by given id."));
     }
 }

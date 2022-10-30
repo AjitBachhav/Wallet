@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Validated
@@ -16,6 +17,8 @@ public interface WalletService {
     Transaction performTransaction(final TransactionType type, @NotNull final Long playerId, @Positive final BigDecimal amount, @NotBlank final String transactionId);
 
     BigDecimal getWalletBalance(@NotNull final Long playerId);
+
+    List<Transaction> getTransactionHistory(@NotNull final Long playerId);
 
     UUID generateTransactionId();
 }

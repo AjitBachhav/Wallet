@@ -1,6 +1,5 @@
 package se.ms.wallet.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +11,7 @@ import se.ms.wallet.enums.TransactionType;
 import se.ms.wallet.service.WalletService;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -37,6 +37,11 @@ public class WalletController {
     @GetMapping(path = "/balance/{playerId}")
     public ResponseEntity<BigDecimal> getWalletBalance(@PathVariable final Long playerId) {
         return ResponseEntity.ok(walletService.getWalletBalance(playerId));
+    }
+
+    @GetMapping(path = "/history/{playerId}")
+    public ResponseEntity<List<Transaction>> getTransactionHistory(@PathVariable final Long playerId) {
+        return ResponseEntity.ok(walletService.getTransactionHistory(playerId));
     }
 
     @GetMapping(path = "/generateTransactionId")
