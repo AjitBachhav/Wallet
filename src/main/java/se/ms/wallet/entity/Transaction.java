@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import se.ms.wallet.enums.TransactionType;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -24,6 +25,7 @@ import java.util.UUID;
 public class Transaction {
 
     @Id
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     private BigDecimal amount;
