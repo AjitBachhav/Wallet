@@ -40,7 +40,7 @@ public class WalletServiceImpl implements WalletService {
         final BigDecimal newBalance = balance.add(amount.multiply(BigDecimal.valueOf(type.getSignum())));
 
         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new HttpServerErrorException(FORBIDDEN, "Negative account balance is not allowed.");
+            throw new HttpServerErrorException(FORBIDDEN, "Transaction failed due to non-sufficient funds.");
         }
 
         validateTransactionId(transactionId);
