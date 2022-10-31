@@ -10,4 +10,6 @@ import javax.validation.constraints.Size;
 public interface PlayerService {
 
     Player createPlayer(@NotBlank @Size(max = 20) final String playerName);
+
+    Long getPlayerIdByName(@NotBlank final String name);
 }
