@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -34,7 +35,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     @Transactional
     public Transaction performTransaction(final TransactionType type, final Long playerId, final BigDecimal amount, final String transactionId) {
-        final Account account = getAccount(playerId);
+        final Account account = getAccount(playerId, TransactionType.DEBIT.equals(type));
 
         final BigDecimal balance = account.getBalance();
         final BigDecimal newBalance = balance.add(amount.multiply(BigDecimal.valueOf(type.getSignum())));
@@ -54,12 +55,12 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public BigDecimal getWalletBalance(final Long playerId) {
-        return getAccount(playerId).getBalance();
+        return getAccount(playerId, false).getBalance();
     }
 
     @Override
     public List<Transaction> getTransactionHistory(final Long playerId) {
-        return getAccount(playerId).getTransactions().stream()
+        return getAccount(playerId, false).getTransactions().stream()
                 .sorted(Comparator.comparing(Transaction::getTransactionDateTime).reversed())
                 .toList();
     }
@@ -80,8 +81,10 @@ public class WalletServiceImpl implements WalletService {
         }
     }
 
-    private Account getAccount(final Long playerId) {
-        return accountRepository.findById(playerId).orElseThrow(() ->
-                new HttpServerErrorException(NOT_FOUND, "Couldn't find an account by given id."));
+    private Account getAccount(final Long playerId, boolean applyLock) {
+        final Optional<Account> account =
+                applyLock ? accountRepository.findWithLockById(playerId) : accountRepository.findById(playerId);
+
+        return account.orElseThrow(() -> new HttpServerErrorException(NOT_FOUND, "Couldn't find an account by given id."));
     }
 }

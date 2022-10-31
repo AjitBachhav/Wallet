@@ -82,7 +82,7 @@ public class WalletServiceTest {
     @Test
     void verifyDebitTransactionFailsWhenNonSufficientFunds() {
         final Long playerId = 1L;
-        when(accountRepository.findById(playerId)).thenReturn(Optional.of(new Account()));
+        when(accountRepository.findWithLockById(playerId)).thenReturn(Optional.of(new Account()));
 
         var exception = assertThrows(HttpServerErrorException.class,
                 () -> walletService.performTransaction(TransactionType.DEBIT, playerId, BigDecimal.ONE, UUID.randomUUID().toString()));
