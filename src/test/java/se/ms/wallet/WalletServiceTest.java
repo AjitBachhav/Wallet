@@ -57,7 +57,7 @@ public class WalletServiceTest {
         final Long playerId = 1L;
         final UUID transactionId = UUID.randomUUID();
 
-        when(accountRepository.findById(playerId)).thenReturn(Optional.of(new Account()));
+        when(accountRepository.findWithLockById(playerId)).thenReturn(Optional.of(new Account()));
         when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(new Transaction()));
 
         var exception = assertThrows(HttpServerErrorException.class,
@@ -70,7 +70,7 @@ public class WalletServiceTest {
     @Test
     void verifyInvalidTransactionIdThrowsException() {
         final Long playerId = 1L;
-        when(accountRepository.findById(playerId)).thenReturn(Optional.of(new Account()));
+        when(accountRepository.findWithLockById(playerId)).thenReturn(Optional.of(new Account()));
 
         var exception = assertThrows(HttpServerErrorException.class,
                 () -> walletService.performTransaction(TransactionType.CREDIT, playerId, BigDecimal.ONE, "Invalid id"));
@@ -88,6 +88,6 @@ public class WalletServiceTest {
                 () -> walletService.performTransaction(TransactionType.DEBIT, playerId, BigDecimal.ONE, UUID.randomUUID().toString()));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        assertEquals(exception.getStatusText(), "Transaction failed due to non-sufficient funds.");
+        assertEquals(exception.getStatusText(), "Transaction failed due to insufficient funds.");
     }
 }

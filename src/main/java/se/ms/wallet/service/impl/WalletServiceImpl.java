@@ -35,13 +35,13 @@ public class WalletServiceImpl implements WalletService {
     @Override
     @Transactional
     public Transaction performTransaction(final TransactionType type, final Long playerId, final BigDecimal amount, final String transactionId) {
-        final Account account = getAccount(playerId, TransactionType.DEBIT.equals(type));
+        final Account account = getAccount(playerId, true);
 
         final BigDecimal balance = account.getBalance();
         final BigDecimal newBalance = balance.add(amount.multiply(BigDecimal.valueOf(type.getSignum())));
 
         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new HttpServerErrorException(FORBIDDEN, "Transaction failed due to non-sufficient funds.");
+            throw new HttpServerErrorException(FORBIDDEN, "Transaction failed due to insufficient funds.");
         }
 
         validateTransactionId(transactionId);
