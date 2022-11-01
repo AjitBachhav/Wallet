@@ -16,7 +16,7 @@ public interface WalletService {
 
     /**
      * Performs a transaction on a players account.
-     * If the transaction is of type 'DEBIT', a lock will be applied to the
+     * A lock will be applied to the
      * account database entity until the transaction is complete.
      *
      * @param type, the type of the transaction ('DEBIT' for withdrawal or 'CREDIT' for deposition).
